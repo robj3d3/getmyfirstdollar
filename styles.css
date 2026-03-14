@@ -264,13 +264,12 @@ section {
   border-bottom: none;
 }
 
-.preview-num {
-  font-family: 'Anton', sans-serif;
-  font-size: 2rem;
+.preview-arrow {
+  font-size: 1.25rem;
   line-height: 1;
   color: var(--text);
   min-width: 1.5rem;
-  text-align: center;
+  opacity: 0.4;
 }
 
 .preview-text {
