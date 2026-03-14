@@ -100,11 +100,14 @@ body {
 }
 
 /* === Subscribe Form === */
+.subscribe-wrapper {
+  max-width: 480px;
+  margin: 0 auto;
+}
+
 .subscribe-form {
   display: flex;
   align-items: center;
-  max-width: 480px;
-  margin: 0 auto;
   border: 1px solid var(--border);
   border-radius: 8px;
   overflow: hidden;

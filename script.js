@@ -19,7 +19,8 @@ document.querySelectorAll('[data-subscribe]').forEach((form) => {
     e.preventDefault();
 
     const input = form.querySelector('input[type="email"]');
-    const message = form.querySelector('.form-message');
+    const wrapper = form.closest('.subscribe-wrapper');
+    const message = wrapper.querySelector('.form-message');
     const email = input.value.trim();
 
     if (!email) return;
