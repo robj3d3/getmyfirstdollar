@@ -31,10 +31,6 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-  <style>
-    .logo, .footer-logo { opacity: 0; }
-    .fonts-loaded .logo, .fonts-loaded .footer-logo { opacity: 1; }
-  </style>
   <link rel="stylesheet" href="/styles.css">
   <script type="application/ld+json">
   {
@@ -75,9 +71,10 @@
   <section class="hero">
     <div class="container">
       <h1 class="logo animate-in">
-        <span>My</span>
-        <span>First</span>
-        <span>Dollar</span>
+        <picture>
+          <source srcset="/images/logo.webp" media="(prefers-color-scheme: dark)">
+          <img src="/images/logo-dark.webp" alt="My First Dollar" class="logo-img" width="400" height="400">
+        </picture>
       </h1>
       <p class="tagline animate-in delay-1">Forget the 10-year plan. I'll show you how to earn your first dollar online. The same way I built a SaaS to $30k/month.</p>
       <div class="subscribe-wrapper animate-in delay-2">
@@ -175,7 +172,6 @@
     </div>
   </footer>
 
-  <script>document.fonts.ready.then(() => document.documentElement.classList.add('fonts-loaded'));</script>
   <script src="/script.js"></script>
 </body>
 </html>

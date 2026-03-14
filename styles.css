@@ -59,27 +59,29 @@ body {
 }
 
 /* === Logo === */
-.logo, .footer-logo {
+.logo {
+  display: inline-block;
+}
+
+.logo-img {
+  width: clamp(200px, 40vw, 360px);
+  height: auto;
+  display: block;
+}
+
+.footer-logo {
   font-family: 'Anton', sans-serif;
   text-transform: uppercase;
   line-height: 0.88;
   letter-spacing: 0.01em;
   color: var(--text);
   display: inline-block;
-  text-shadow: var(--logo-glow);
-}
-
-.logo {
-  font-size: clamp(4rem, 14vw, 8rem);
-}
-
-.logo span, .footer-logo span {
-  display: block;
-}
-
-.footer-logo {
   font-size: 1.5rem;
   margin-bottom: 12px;
+}
+
+.footer-logo span {
+  display: block;
 }
 
 /* === Hero === */
