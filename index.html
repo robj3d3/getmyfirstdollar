@@ -31,6 +31,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    .logo, .footer-logo { opacity: 0; }
+    .fonts-loaded .logo, .fonts-loaded .footer-logo { opacity: 1; }
+  </style>
   <link rel="stylesheet" href="/styles.css">
   <script type="application/ld+json">
   {
@@ -171,6 +175,7 @@
     </div>
   </footer>
 
+  <script>document.fonts.ready.then(() => document.documentElement.classList.add('fonts-loaded'));</script>
   <script src="/script.js"></script>
 </body>
 </html>
