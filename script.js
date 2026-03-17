@@ -41,7 +41,7 @@ document.querySelectorAll('[data-subscribe]').forEach((form) => {
       if (res.ok) {
         form.classList.add('success');
         input.value = '';
-        message.textContent = "You're in. Welcome to My First Dollar.";
+        message.textContent = "You're in! Check your inbox for a welcome email from Rob.";
         message.className = 'form-message success';
       } else {
         message.textContent = data.error || 'Something went wrong. Try again.';
