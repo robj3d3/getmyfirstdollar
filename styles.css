@@ -307,6 +307,10 @@ section {
   margin: 0 auto;
 }
 
+.video-wrapper + .video-wrapper {
+  margin-top: 20px;
+}
+
 .video-link {
   display: block;
   position: relative;
