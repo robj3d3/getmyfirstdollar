@@ -13,6 +13,34 @@ const observer = new IntersectionObserver(
 
 document.querySelectorAll('.scroll-reveal').forEach((el) => observer.observe(el));
 
+// Counter slot animation
+(function counterTick() {
+  const seen = sessionStorage.getItem('counter_done');
+  const slot = document.querySelector('.counter-slot');
+  if (!slot || seen) {
+    if (seen && slot) {
+      slot.textContent = '9';
+    }
+    return;
+  }
+
+  function tick(from, to, delay) {
+    setTimeout(() => {
+      slot.innerHTML = from + '<span style="display:block">' + to + '</span>';
+      requestAnimationFrame(() => slot.classList.add('tick'));
+      setTimeout(() => {
+        slot.classList.remove('tick');
+        slot.innerHTML = to;
+      }, 400);
+    }, delay);
+  }
+
+  tick('7', '8', 3000);
+  tick('8', '9', 53000);
+
+  setTimeout(() => sessionStorage.setItem('counter_done', '1'), 54000);
+})();
+
 // Subscribe forms
 document.querySelectorAll('[data-subscribe]').forEach((form) => {
   form.addEventListener('submit', async (e) => {
