@@ -26,7 +26,7 @@ document.querySelectorAll('.scroll-reveal').forEach((el) => observer.observe(el)
 
   function tick(from, to, delay) {
     setTimeout(() => {
-      slot.innerHTML = from + '<span style="display:block">' + to + '</span>';
+      slot.innerHTML = from + '<span style="display:block;position:absolute;left:0;top:1.1em">' + to + '</span>';
       requestAnimationFrame(() => slot.classList.add('tick'));
       setTimeout(() => {
         slot.classList.remove('tick');

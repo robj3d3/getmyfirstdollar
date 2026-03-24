@@ -208,18 +208,22 @@ body {
 /* === Counter slot === */
 .counter-digit {
   display: inline-block;
-  height: 1em;
+  width: 0.6em;
+  height: 1.1em;
   overflow: hidden;
   vertical-align: bottom;
+  position: relative;
 }
 
 .counter-slot {
-  display: block;
+  position: absolute;
+  left: 0;
+  top: 0;
   transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .counter-slot.tick {
-  transform: translateY(-1em);
+  transform: translateY(-1.1em);
 }
 
 .subscribe-form.success {
