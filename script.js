@@ -15,30 +15,24 @@ document.querySelectorAll('.scroll-reveal').forEach((el) => observer.observe(el)
 
 // Counter slot animation
 (function counterTick() {
+  const reel = document.querySelector('.counter-reel');
+  if (!reel) return;
+
   const seen = sessionStorage.getItem('counter_done');
-  const slot = document.querySelector('.counter-slot');
-  if (!slot || seen) {
-    if (seen && slot) {
-      slot.textContent = '9';
-    }
+  if (seen) {
+    reel.style.transform = 'translateY(-2.4em)';
+    reel.style.transition = 'none';
     return;
   }
 
-  function tick(from, to, delay) {
-    setTimeout(() => {
-      slot.innerHTML = from + '<span style="display:block;position:absolute;left:0;top:1.1em">' + to + '</span>';
-      requestAnimationFrame(() => slot.classList.add('tick'));
-      setTimeout(() => {
-        slot.classList.remove('tick');
-        slot.innerHTML = to;
-      }, 400);
-    }, delay);
-  }
+  setTimeout(() => {
+    reel.style.transform = 'translateY(-1.2em)';
+  }, 3000);
 
-  tick('7', '8', 3000);
-  tick('8', '9', 53000);
-
-  setTimeout(() => sessionStorage.setItem('counter_done', '1'), 54000);
+  setTimeout(() => {
+    reel.style.transform = 'translateY(-2.4em)';
+    sessionStorage.setItem('counter_done', '1');
+  }, 53000);
 })();
 
 // Subscribe forms

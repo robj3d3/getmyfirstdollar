@@ -207,23 +207,24 @@ body {
 
 /* === Counter slot === */
 .counter-digit {
-  display: inline-block;
-  width: 0.6em;
-  height: 1.1em;
-  overflow: hidden;
+  display: inline-flex;
   vertical-align: bottom;
-  position: relative;
+  overflow: hidden;
+  height: 1.2em;
+  line-height: 1.2em;
 }
 
-.counter-slot {
-  position: absolute;
-  left: 0;
-  top: 0;
+.counter-reel {
+  display: flex;
+  flex-direction: column;
   transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.counter-slot.tick {
-  transform: translateY(-1.1em);
+.counter-reel span {
+  height: 1.2em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .subscribe-form.success {
