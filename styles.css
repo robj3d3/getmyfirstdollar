@@ -218,6 +218,7 @@ body {
 
 .counter-reel span {
   display: block;
+  line-height: 0.8;
 }
 
 .subscribe-form.success {
