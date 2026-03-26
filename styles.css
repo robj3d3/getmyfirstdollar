@@ -209,7 +209,7 @@ body {
 .counter-digit {
   display: inline-block;
   overflow: hidden;
-  vertical-align: top;
+  vertical-align: baseline;
 }
 
 .counter-reel {
