@@ -205,22 +205,6 @@ body {
   color: #e55;
 }
 
-/* === Counter slot === */
-.counter-digit {
-  display: inline-block;
-  overflow: hidden;
-  vertical-align: baseline;
-}
-
-.counter-reel {
-  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.counter-reel span {
-  display: block;
-  line-height: 0.7;
-}
-
 .subscribe-form.success {
   border-color: var(--text);
 }
