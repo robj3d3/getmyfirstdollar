@@ -15,22 +15,28 @@ document.querySelectorAll('.scroll-reveal').forEach((el) => observer.observe(el)
 
 // Counter slot animation
 (function counterTick() {
+  const digit = document.querySelector('.counter-digit');
   const reel = document.querySelector('.counter-reel');
-  if (!reel) return;
+  if (!digit || !reel) return;
+
+  // Measure single digit height and lock the container
+  const firstSpan = reel.querySelector('span');
+  const h = firstSpan.offsetHeight;
+  digit.style.height = h + 'px';
 
   const seen = sessionStorage.getItem('counter_done');
   if (seen) {
-    reel.style.transform = 'translateY(-2em)';
     reel.style.transition = 'none';
+    reel.style.transform = 'translateY(' + (-2 * h) + 'px)';
     return;
   }
 
   setTimeout(() => {
-    reel.style.transform = 'translateY(-1em)';
+    reel.style.transform = 'translateY(' + (-h) + 'px)';
   }, 3000);
 
   setTimeout(() => {
-    reel.style.transform = 'translateY(-2em)';
+    reel.style.transform = 'translateY(' + (-2 * h) + 'px)';
     sessionStorage.setItem('counter_done', '1');
   }, 53000);
 })();
