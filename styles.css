@@ -207,24 +207,26 @@ body {
 
 /* === Counter slot === */
 .counter-digit {
-  display: inline-flex;
-  vertical-align: bottom;
+  display: inline-block;
+  position: relative;
+  width: 0.55em;
+  height: 1em;
   overflow: hidden;
-  height: 1.2em;
-  line-height: 1.2em;
+  vertical-align: bottom;
 }
 
 .counter-reel {
-  display: flex;
-  flex-direction: column;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
   transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .counter-reel span {
-  height: 1.2em;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: block;
+  height: 1em;
+  line-height: 1;
 }
 
 .subscribe-form.success {

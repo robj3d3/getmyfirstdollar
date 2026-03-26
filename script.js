@@ -20,17 +20,17 @@ document.querySelectorAll('.scroll-reveal').forEach((el) => observer.observe(el)
 
   const seen = sessionStorage.getItem('counter_done');
   if (seen) {
-    reel.style.transform = 'translateY(-2.4em)';
+    reel.style.transform = 'translateY(-2em)';
     reel.style.transition = 'none';
     return;
   }
 
   setTimeout(() => {
-    reel.style.transform = 'translateY(-1.2em)';
+    reel.style.transform = 'translateY(-1em)';
   }, 3000);
 
   setTimeout(() => {
-    reel.style.transform = 'translateY(-2.4em)';
+    reel.style.transform = 'translateY(-2em)';
     sessionStorage.setItem('counter_done', '1');
   }, 53000);
 })();
