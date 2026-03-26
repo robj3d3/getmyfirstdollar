@@ -210,8 +210,6 @@ body {
   display: inline-block;
   overflow: hidden;
   vertical-align: baseline;
-  position: relative;
-  top: -1px;
 }
 
 .counter-reel {
@@ -220,7 +218,7 @@ body {
 
 .counter-reel span {
   display: block;
-  line-height: 0.8;
+  line-height: 0.9;
 }
 
 .subscribe-form.success {
