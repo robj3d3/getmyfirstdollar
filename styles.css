@@ -622,4 +622,11 @@ section {
   bottom: auto;
 }
 
+/* === Mobile-only line break utility === */
+.mobile-break { display: none; }
+
+@media (max-width: 640px) {
+  .mobile-break { display: inline; }
+}
+
 
