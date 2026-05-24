@@ -1,6 +1,9 @@
 {
   "rewrites": [
     { "source": "/api/subscribe", "destination": "/api/subscribe" },
+    { "source": "/v/:slug", "destination": "/api/v/:slug" },
+    { "source": "/admin", "destination": "/api/admin/page" },
+    { "source": "/admin/", "destination": "/api/admin/page" },
     { "source": "/((?!api/).*)", "destination": "/index.html" }
   ],
   "headers": [
