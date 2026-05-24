@@ -66,8 +66,13 @@ function metadataWithFallback({ videoId, title, author, thumbnailUrl }) {
   return { title: t, author: a, thumbnailUrl: thumb, description };
 }
 
-function headTags({ pageUrl, videoId, title, description, thumbnailUrl }) {
+function headTags({ pageUrl, videoId, title, description }) {
   const ytUrl = `https://www.youtube.com/watch?v=${encodeURIComponent(videoId)}`;
+  // Construct maxresdefault (1280x720, 16:9) at render time for higher-quality
+  // preview cards (Instagram, Facebook, Twitter). Not all videos have a
+  // maxresdefault — older / very short / some auto-uploaded videos may 404,
+  // in which case the preview card shows no image (acceptable trade-off).
+  const thumbHighRes = `https://i.ytimg.com/vi/${encodeURIComponent(videoId)}/maxresdefault.jpg`;
   return `<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${escapeHtml(title)}</title>
@@ -79,15 +84,15 @@ function headTags({ pageUrl, videoId, title, description, thumbnailUrl }) {
 <meta property="og:url" content="${escapeHtml(pageUrl)}">
 <meta property="og:title" content="${escapeHtml(title)}">
 <meta property="og:description" content="${escapeHtml(description)}">
-<meta property="og:image" content="${escapeHtml(thumbnailUrl)}">
-<meta property="og:image:width" content="480">
-<meta property="og:image:height" content="360">
+<meta property="og:image" content="${escapeHtml(thumbHighRes)}">
+<meta property="og:image:width" content="1280">
+<meta property="og:image:height" content="720">
 <meta property="og:video" content="${escapeHtml(ytUrl)}">
 <meta property="og:video:url" content="${escapeHtml(ytUrl)}">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="${escapeHtml(title)}">
 <meta name="twitter:description" content="${escapeHtml(description)}">
-<meta name="twitter:image" content="${escapeHtml(thumbnailUrl)}">`;
+<meta name="twitter:image" content="${escapeHtml(thumbHighRes)}">`;
 }
 
 export function renderCrawlerPage({ slug, videoId, title, author, thumbnailUrl, pageUrl }) {
@@ -96,7 +101,7 @@ export function renderCrawlerPage({ slug, videoId, title, author, thumbnailUrl, 
   return `<!doctype html>
 <html lang="en">
 <head>
-${headTags({ pageUrl, videoId, title: meta.title, description: meta.description, thumbnailUrl: meta.thumbnailUrl })}
+${headTags({ pageUrl, videoId, title: meta.title, description: meta.description })}
 </head>
 <body>
 <p>Watch on <a href="${escapeHtml(ytUrl)}">YouTube</a>.</p>
@@ -108,6 +113,10 @@ export function renderInterstitialPage({ slug, videoId, title, author, thumbnail
   const meta = metadataWithFallback({ videoId, title, author, thumbnailUrl });
   const ytUrl = `https://www.youtube.com/watch?v=${encodeURIComponent(videoId)}`;
   const appUrl = `vnd.youtube://watch?v=${encodeURIComponent(videoId)}`;
+  // Visible interstitial thumbnail uses maxresdefault to match the OG card.
+  // Browsers handle a missing maxres gracefully (broken-img icon); the OG
+  // preview is the load-bearing path anyway.
+  const thumbHighRes = `https://i.ytimg.com/vi/${encodeURIComponent(videoId)}/maxresdefault.jpg`;
   const SLUG = jsString(slug);
   const VIDEO = jsString(videoId);
   const KEY = jsString(posthogKey || '');
@@ -116,7 +125,7 @@ export function renderInterstitialPage({ slug, videoId, title, author, thumbnail
   return `<!doctype html>
 <html lang="en">
 <head>
-${headTags({ pageUrl, videoId, title: meta.title, description: meta.description, thumbnailUrl: meta.thumbnailUrl })}
+${headTags({ pageUrl, videoId, title: meta.title, description: meta.description })}
 <style>
 html,body{margin:0;background:#0a0a0a;color:#fff;font-family:system-ui,sans-serif}
 .wrap{display:flex;flex-direction:column;min-height:100vh;align-items:center;justify-content:center;padding:1.5rem;text-align:center;gap:1rem}
@@ -129,7 +138,7 @@ h1{font-size:1.1rem;line-height:1.3;margin:.5rem 0 0;max-width:360px}
 </head>
 <body>
 <div class="wrap">
-<img class="thumb" src="${escapeHtml(meta.thumbnailUrl)}" alt="">
+<img class="thumb" src="${escapeHtml(thumbHighRes)}" alt="">
 <h1>${escapeHtml(meta.title)}</h1>
 ${meta.author ? `<p class="author">${escapeHtml(meta.author)}</p>` : ''}
 <a class="cta" id="cta" href="${escapeHtml(appUrl)}" rel="noopener">Open in YouTube</a>
@@ -179,7 +188,7 @@ export function renderRedirectPage({ slug, videoId, title, author, thumbnailUrl,
   return `<!doctype html>
 <html lang="en">
 <head>
-${headTags({ pageUrl, videoId, title: meta.title, description: meta.description, thumbnailUrl: meta.thumbnailUrl })}
+${headTags({ pageUrl, videoId, title: meta.title, description: meta.description })}
 <style>html,body{margin:0;background:#0a0a0a;color:#fff;font-family:system-ui,sans-serif}.wrap{display:flex;min-height:100vh;align-items:center;justify-content:center;padding:1rem;text-align:center}a{color:#fff}</style>
 </head>
 <body>
