@@ -50,19 +50,37 @@ The schema is a single key, `links`, holding `{ "<slug>": { "videoId": "…", "c
 5. Click **Create link**. The row appears in the list with a copy button and a thumbnail.
 6. Share `https://www.getmyfirstdollar.com/v/<slug>`.
 
-### Behaviour by client
+### Behaviour by client (server detects UA first, then branches)
 
 | Client | What happens |
 | --- | --- |
-| iOS Safari w/ YouTube app | `youtube://` scheme opens the app; if no app, falls back to `m.youtube.com` after 500ms. |
-| Android Chrome | `intent://` URL opens the app, or `S.browser_fallback_url` takes over. |
-| Desktop browser | Immediate `location.replace` to `https://www.youtube.com/watch?v=…`. No 500ms delay. |
-| Instagram in-app browser | Skips the deep-link attempt (UA detected), goes straight to https — Instagram blocks custom schemes. |
+| Social-preview crawler (`facebookexternalhit`, `Twitterbot`, `LinkedInBot`, `Slackbot`, `WhatsApp`, `TelegramBot`, `Discordbot`, etc.) | JS-free HTML with full `og:*` and `twitter:*` tags + `noindex`. Powers IG / FB / Slack DM preview cards. |
+| Instagram / Facebook / Threads in-app WebView | Server-rendered interstitial (thumbnail + title + "Open in YouTube" button). An inline `<script>` immediately after the button calls `.click()` synchronously during parse, exploiting iOS's transient user-activation window from the original tap. Most users see the interstitial flash for ~1 second before the YouTube app opens. Visible button is the fallback. Secondary "Continue in this browser" link below for users without YouTube installed. |
+| iOS Safari (Universal Link) | `location.replace('https://www.youtube.com/watch?v=…')` → iOS routes silently to the YouTube app when installed, falls back to the web automatically when not. No prompt, no delay. |
+| Android Chrome | `intent://www.youtube.com/watch?v=…` URL opens the YouTube app, or `S.browser_fallback_url` takes over. |
+| Desktop browser | Immediate `location.replace` to `https://www.youtube.com/watch?v=…`. |
+
+### Link metadata (title, author, thumbnail)
+
+At admin-create time, the server calls YouTube's [oEmbed endpoint](https://www.youtube.com/oembed) for the video ID and stores `title`, `author`, `thumbnailUrl`, and `metadataFetchedAt` alongside `videoId` / `createdAt`. The OG / Twitter tags on every `/v/<slug>` response are populated from those stored fields — no per-hit API call. If oEmbed fails at create time (timeout, private video, age-restricted, deleted), the link is still created — the four metadata fields are stored as `null` and the admin UI surfaces a warning. The crawler / interstitial / redirect pages all fall back to a generic preview (`"Watch on YouTube"` + auto-constructed `i.ytimg.com/vi/<id>/hqdefault.jpg` thumbnail) so a metadata-less link still looks reasonable.
+
+### Backfill: filling metadata for older links
+
+If you have links in Edge Config that pre-date the metadata fields (or oEmbed failed at create), run the backfill script once from your local terminal:
+
+```bash
+cd ~/Documents/Code/getmyfirstdollar
+vercel env pull .env.local     # one-time, pulls the prod env vars
+node --env-file=.env.local scripts/backfill-metadata.js
+```
+
+The script reads every link, skips records that already have `title` (so re-running it is a no-op), calls oEmbed for the rest, and writes the merged map back to Edge Config in a single PATCH at the end. Prints `OK` / `SKIP` / `FAIL` per record and a final summary. Exits 0 on normal completion, including individual oEmbed failures (those records stay null and can be retried next run).
 
 ### Storage notes
 
-- Click counts are NOT in Edge Config. PostHog captures `deep_link_clicked` with `{ slug, videoId, platform }` per redirect.
+- Click counts are NOT in Edge Config. PostHog captures `deep_link_clicked` with `{ slug, videoId, platform }` per redirect (`platform` is `'ios' | 'android' | 'desktop' | 'instagram' | 'instagram_browser_fallback'`).
 - Admin writes replace the entire `links` map atomically via `PATCH /v1/edge-config/{id}/items?teamId=…` with an `upsert` operation.
+- Record shape: `{ videoId, createdAt, title, author, thumbnailUrl, metadataFetchedAt }`. The last four are nullable.
 
 ### Local dev
 
