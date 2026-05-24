@@ -83,8 +83,6 @@ export function renderRedirectPage({ slug, videoId, posthogKey, posthogHost }) {
   var isAndroid=/Android/.test(ua);
   var platform=isInstagram?"instagram":(isIOS?"ios":(isAndroid?"android":"desktop"));
   var https="https://www.youtube.com/watch?v="+encodeURIComponent(VIDEO_ID);
-  var httpsM="https://m.youtube.com/watch?v="+encodeURIComponent(VIDEO_ID);
-  var iosApp="youtube://watch?v="+encodeURIComponent(VIDEO_ID);
   var android="intent://www.youtube.com/watch?v="+encodeURIComponent(VIDEO_ID)+
               "#Intent;package=com.google.android.youtube;scheme=https;"+
               "S.browser_fallback_url="+encodeURIComponent(https)+";end";
@@ -118,9 +116,10 @@ export function renderRedirectPage({ slug, videoId, posthogKey, posthogHost }) {
   if(isInstagram||(!isIOS&&!isAndroid)){
     go(https,true);
   } else if(isIOS){
-    location.href=iosApp;
-    setTimeout(function(){ if(!document.hidden) location.replace(httpsM); },500);
-    capture();
+    // Universal Link: iOS opens the YouTube app silently when installed and
+    // falls back to web automatically when it isn't. No "Open in YouTube?"
+    // prompt, no 500ms timer needed.
+    go(https,true);
   } else if(isAndroid){
     go(android,false);
   }
