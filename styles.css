@@ -604,4 +604,41 @@ section {
   }
 }
 
+/* === The Podcast === */
+.podcast-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.podcast-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.podcast-card-title {
+  font-size: 0.875rem;
+  line-height: 1.35;
+  color: var(--text);
+  font-weight: 500;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+@media (min-width: 641px) {
+  .podcast-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    max-width: none;
+  }
+  .podcast-card-title {
+    font-size: 0.8125rem;
+  }
+}
+
 
