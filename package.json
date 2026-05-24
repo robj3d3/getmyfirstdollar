@@ -1,0 +1,8 @@
+{
+  "name": "getmyfirstdollar",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@vercel/edge-config": "^1.4.0"
+  }
+}
