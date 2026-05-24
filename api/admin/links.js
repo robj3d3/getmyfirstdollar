@@ -2,6 +2,7 @@ import { verifySession, COOKIE_NAME } from '../_lib/auth.js';
 import { parseCookies } from '../_lib/cookies.js';
 import { getLinks, writeLinks } from '../_lib/edge.js';
 import { parseYouTubeInput } from '../_lib/redirect-page.js';
+import { fetchYouTubeMetadata } from '../_lib/oembed.js';
 
 const SLUG_RE = /^[A-Za-z0-9_-]{1,64}$/;
 
@@ -78,7 +79,17 @@ export default async function handler(req, res) {
       return res.status(409).json({ error: 'Slug already exists' });
     }
 
-    const next = { ...links, [slug]: { videoId, createdAt: Date.now() } };
+    const metadata = await fetchYouTubeMetadata(videoId);
+    const now = Date.now();
+    const record = {
+      videoId,
+      createdAt: now,
+      title: metadata?.title ?? null,
+      author: metadata?.author ?? null,
+      thumbnailUrl: metadata?.thumbnailUrl ?? null,
+      metadataFetchedAt: metadata ? now : null,
+    };
+    const next = { ...links, [slug]: record };
 
     try {
       await writeLinks(next);
@@ -87,8 +98,16 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: 'Something went wrong' });
     }
 
-    console.log('[admin/links] create-ok', { slug, videoId });
-    return res.status(200).json({ slug, videoId, createdAt: next[slug].createdAt });
+    console.log('[admin/links] create-ok', { slug, videoId, hasMetadata: !!metadata });
+    return res.status(200).json({
+      slug,
+      videoId,
+      createdAt: record.createdAt,
+      title: record.title,
+      author: record.author,
+      thumbnailUrl: record.thumbnailUrl,
+      ...(metadata ? {} : { warning: 'YouTube metadata could not be fetched — preview will be generic.' }),
+    });
   }
 
   if (req.method === 'DELETE') {
