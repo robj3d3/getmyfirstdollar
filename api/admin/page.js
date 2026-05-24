@@ -71,6 +71,7 @@ function dashboardHtml() {
   .create input{min-width:0}
   .create .submit{grid-column:1/-1;justify-self:start}
   .err{color:#ff6b6b;font-size:.9rem;min-height:1.2em;margin-bottom:1rem}
+  .warn{color:#f5c542;font-size:.9rem;min-height:1.2em;margin-bottom:1rem}
   ul.links{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.75rem}
   ul.links li{display:grid;grid-template-columns:88px 1fr auto;gap:.75rem;align-items:center;padding:.6rem;border:1px solid #222;border-radius:.5rem;background:#0f0f0f}
   ul.links img{width:88px;height:50px;object-fit:cover;border-radius:.25rem;background:#222}
@@ -94,6 +95,7 @@ function dashboardHtml() {
     <button class="submit" type="submit">Create link</button>
   </form>
   <div class="err" id="err"></div>
+  <div class="warn" id="warn"></div>
 
   <ul class="links" id="links"><li>Loading…</li></ul>
 </div>
@@ -101,8 +103,10 @@ function dashboardHtml() {
 const origin = location.origin;
 const linksEl = document.getElementById('links');
 const errEl = document.getElementById('err');
+const warnEl = document.getElementById('warn');
 
 function showErr(msg){ errEl.textContent = msg || ''; }
+function showWarn(msg){ warnEl.textContent = msg || ''; }
 
 function row(item){
   const url = origin + '/v/' + encodeURIComponent(item.slug);
@@ -130,6 +134,7 @@ async function load(){
 document.getElementById('create').addEventListener('submit', async (e) => {
   e.preventDefault();
   showErr('');
+  showWarn('');
   const fd = new FormData(e.target);
   const body = { youtubeUrl: fd.get('youtubeUrl'), slug: fd.get('slug') || undefined };
   const res = await fetch('/api/admin/links', {
@@ -139,6 +144,7 @@ document.getElementById('create').addEventListener('submit', async (e) => {
   });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) { showErr(data.error || 'Failed to create'); return; }
+  if (data.warning) showWarn(data.warning);
   e.target.reset();
   load();
 });
