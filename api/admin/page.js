@@ -61,6 +61,7 @@ function dashboardHtml() {
   html,body{margin:0;background:#0a0a0a;color:#fff;font-family:system-ui,sans-serif;line-height:1.4}
   .wrap{max-width:880px;margin:0 auto;padding:1.5rem 1rem 4rem}
   header{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:1.5rem}
+  .header-actions{display:flex;gap:.5rem}
   h1{font-size:1.4rem;margin:0}
   a{color:#fff}
   button,input{font:inherit;padding:.55rem .7rem;border-radius:.4rem;border:1px solid #333;background:#111;color:#fff}
@@ -86,7 +87,10 @@ function dashboardHtml() {
 <div class="wrap">
   <header>
     <h1>Deep links</h1>
-    <button id="logout">Log out</button>
+    <div class="header-actions">
+      <button id="reload" type="button">Reload list</button>
+      <button id="logout" type="button">Log out</button>
+    </div>
   </header>
 
   <form id="create" class="create">
@@ -137,16 +141,30 @@ document.getElementById('create').addEventListener('submit', async (e) => {
   showWarn('');
   const fd = new FormData(e.target);
   const body = { youtubeUrl: fd.get('youtubeUrl'), slug: fd.get('slug') || undefined };
-  const res = await fetch('/api/admin/links', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
-  });
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) { showErr(data.error || 'Failed to create'); return; }
-  if (data.warning) showWarn(data.warning);
-  e.target.reset();
-  load();
+  const btn = e.target.querySelector('button[type="submit"]');
+  const btnLabel = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = 'Creating…';
+  try {
+    const res = await fetch('/api/admin/links', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) { showErr(data.error || 'Failed to create'); return; }
+    if (data.warning) showWarn(data.warning);
+    // Optimistic UI: prepend the new row from the POST response. Avoids the
+    // Edge Config read-after-write lag that would otherwise hide the new
+    // link from a follow-up GET for a few seconds.
+    const placeholder = linksEl.querySelector('li:only-child');
+    if (placeholder && !placeholder.dataset.slug) linksEl.innerHTML = '';
+    linksEl.prepend(row(data));
+    e.target.reset();
+  } finally {
+    btn.disabled = false;
+    btn.textContent = btnLabel;
+  }
 });
 
 linksEl.addEventListener('click', async (e) => {
@@ -159,9 +177,18 @@ linksEl.addEventListener('click', async (e) => {
     if (!confirm('Delete /v/' + t.dataset.del + '?')) return;
     const res = await fetch('/api/admin/links?slug=' + encodeURIComponent(t.dataset.del), { method: 'DELETE' });
     if (!res.ok) { showErr('Delete failed'); return; }
-    load();
+    // Optimistic UI: remove the row in place. Avoids the Edge Config
+    // read-after-write lag that would otherwise make the deleted row
+    // briefly reappear on a follow-up GET.
+    const li = t.closest('li');
+    if (li) li.remove();
+    if (!linksEl.children.length) {
+      linksEl.innerHTML = '<li>No links yet. Create one above.</li>';
+    }
   }
 });
+
+document.getElementById('reload').addEventListener('click', () => { load(); });
 
 document.getElementById('logout').addEventListener('click', async () => {
   await fetch('/api/admin/logout', { method: 'POST' });
