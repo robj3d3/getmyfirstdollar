@@ -622,11 +622,14 @@ section {
   bottom: auto;
 }
 
-/* === Mobile-only line break utility === */
-.mobile-break { display: none; }
-
+/* === Mobile-only line break utility ===
+   .mobile-break is a span that renders inline on desktop/tablet
+   (so the parent reads as one line) and flips to display:block
+   below 640px to force a line break. Avoids using a <br> so that
+   if styles.css is served stale from cache, the markup still
+   renders as a single line everywhere instead of wrapping. */
 @media (max-width: 640px) {
-  .mobile-break { display: inline; }
+  .mobile-break { display: block; }
 }
 
 
